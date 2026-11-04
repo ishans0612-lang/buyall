@@ -1,141 +1,259 @@
-// ===============================
-// BUYALL - Shopping Website
-// ===============================
 
-const products = [
-  {
-    id: 1,
-    name: "Wireless Bluetooth Headphones",
-    category: "Electronics",
-    price: 1299,
-    oldPrice: 1999,
-    rating: 4.5,
-    image: "https://placehold.co/400x300?text=Headphones",
-    store: "Sample Store",
-    description: "Wireless headphones with comfortable ear cushions."
-  },
-  {
-    id: 2,
-    name: "Smartphone 5G",
-    category: "Mobiles",
-    price: 14999,
-    oldPrice: 17999,
-    rating: 4.4,
-    image: "https://placehold.co/400x300?text=Smartphone",
-    store: "Sample Store",
-    description: "5G smartphone with a large display."
-  },
-  {
-    id: 3,
-    name: "Running Shoes",
-    category: "Shoes",
-    price: 899,
-    oldPrice: 1499,
-    rating: 4.2,
-    image: "https://placehold.co/400x300?text=Shoes",
-    store: "Sample Store",
-    description: "Lightweight shoes for everyday use."
-  },
-  {
-    id: 4,
-    name: "Classic Wrist Watch",
-    category: "Fashion",
-    price: 699,
-    oldPrice: 1199,
-    rating: 4.1,
-    image: "https://placehold.co/400x300?text=Watch",
-    store: "Sample Store",
-    description: "Classic design wrist watch."
-  },
-  {
-    id: 5,
-    name: "Gaming Mouse",
-    category: "Gaming",
-    price: 499,
-    oldPrice: 899,
-    rating: 4.3,
-    image: "https://placehold.co/400x300?text=Gaming+Mouse",
-    store: "Sample Store",
-    description: "Gaming mouse with adjustable DPI."
-  },
-  {
-    id: 6,
-    name: "Study Table Lamp",
-    category: "Home",
-    price: 349,
-    oldPrice: 599,
-    rating: 4.0,
-    image: "https://placehold.co/400x300?text=Lamp",
-    store: "Sample Store",
-    description: "LED lamp for your study desk."
+"use strict";
+
+/* =====================================
+   BUYALL - COMPLETE FRONTEND SYSTEM
+===================================== */
+
+const $ = (selector) => document.querySelector(selector);
+
+const STORAGE = {
+  wishlist: "buyallWishlist",
+  cart: "buyallCart",
+  recent: "buyallRecent",
+  theme: "buyallTheme",
+  language: "buyallLanguage",
+  reviews: "buyallReviews",
+  alerts: "buyallPriceAlerts",
+  vip: "buyallVIP",
+  products: "buyallProducts",
+  compare: "buyallCompareLink"
+};
+
+function readStorage(key, fallback) {
+  try {
+    const value = localStorage.getItem(key);
+    return value === null ? fallback : JSON.parse(value);
+  } catch {
+    return fallback;
   }
-];
+}
 
-let wishlist = JSON.parse(localStorage.getItem("buyallWishlist")) || [];
-let recentlyViewed = JSON.parse(localStorage.getItem("buyallRecent")) || [];
+function saveStorage(key, value) {
+  localStorage.setItem(key, JSON.stringify(value));
+}
+
+let products = readStorage(STORAGE.products, null);
+
+if (!Array.isArray(products)) {
+  products = [
+    {
+      id: 1,
+      name: "Wireless Bluetooth Headphones",
+      category: "Electronics",
+      brand: "Audio",
+      price: 1299,
+      oldPrice: 1999,
+      rating: 4.5,
+      image: "https://placehold.co/500x400?text=Headphones",
+      store: "Sample Store",
+      description: "Wireless headphones with comfortable ear cushions."
+    },
+    {
+      id: 2,
+      name: "Smartphone 5G",
+      category: "Mobiles",
+      brand: "Mobile",
+      price: 14999,
+      oldPrice: 17999,
+      rating: 4.4,
+      image: "https://placehold.co/500x400?text=Smartphone",
+      store: "Sample Store",
+      description: "A smartphone with a large display and 5G connectivity."
+    },
+    {
+      id: 3,
+      name: "Running Shoes",
+      category: "Shoes",
+      brand: "Sports",
+      price: 899,
+      oldPrice: 1499,
+      rating: 4.2,
+      image: "https://placehold.co/500x400?text=Shoes",
+      store: "Sample Store",
+      description: "Comfortable lightweight everyday running shoes."
+    },
+    {
+      id: 4,
+      name: "Classic Wrist Watch",
+      category: "Fashion",
+      brand: "Fashion",
+      price: 699,
+      oldPrice: 1199,
+      rating: 4.1,
+      image: "https://placehold.co/500x400?text=Watch",
+      store: "Sample Store",
+      description: "Classic design wrist watch."
+    },
+    {
+      id: 5,
+      name: "Gaming Mouse",
+      category: "Gaming",
+      brand: "Gaming",
+      price: 499,
+      oldPrice: 899,
+      rating: 4.3,
+      image: "https://placehold.co/500x400?text=Mouse",
+      store: "Sample Store",
+      description: "Gaming mouse with adjustable sensitivity."
+    },
+    {
+      id: 6,
+      name: "Study Table Lamp",
+      category: "Home",
+      brand: "Home",
+      price: 349,
+      oldPrice: 599,
+      rating: 4.0,
+      image: "https://placehold.co/500x400?text=Lamp",
+      store: "Sample Store",
+      description: "LED study lamp for your desk."
+    },
+    {
+      id: 7,
+      name: "Wireless Keyboard",
+      category: "Electronics",
+      brand: "Tech",
+      price: 799,
+      oldPrice: 1199,
+      rating: 4.3,
+      image: "https://placehold.co/500x400?text=Keyboard",
+      store: "Sample Store",
+      description: "Wireless keyboard for everyday use."
+    },
+    {
+      id: 8,
+      name: "Backpack",
+      category: "Fashion",
+      brand: "Fashion",
+      price: 599,
+      oldPrice: 999,
+      rating: 4.2,
+      image: "https://placehold.co/500x400?text=Backpack",
+      store: "Sample Store",
+      description: "Everyday backpack with multiple compartments."
+    }
+  ];
+
+  saveStorage(STORAGE.products, products);
+}
+
+let wishlist = readStorage(STORAGE.wishlist, []);
+let cart = readStorage(STORAGE.cart, []);
+let recent = readStorage(STORAGE.recent, []);
+let reviews = readStorage(STORAGE.reviews, {});
+let alerts = readStorage(STORAGE.alerts, []);
 let currentCategory = "All";
+let currentTheme = localStorage.getItem(STORAGE.theme) || "light";
 
-// ===============================
-// ELEMENTS
-// ===============================
+/* =====================================
+   TOAST
+===================================== */
 
-const productGrid = document.getElementById("productGrid");
-const dealsGrid = document.getElementById("dealsGrid");
-const recentGrid = document.getElementById("recentGrid");
-const searchInput = document.getElementById("searchInput");
-const searchBtn = document.getElementById("searchBtn");
+function toast(message) {
+  const element = $("#toast");
 
-// ===============================
-// PRODUCT CARD
-// ===============================
+  if (!element) {
+    alert(message);
+    return;
+  }
 
-function createProductCard(product) {
+  element.textContent = message;
+  element.classList.add("show");
+
+  clearTimeout(toast.timer);
+
+  toast.timer = setTimeout(() => {
+    element.classList.remove("show");
+  }, 2600);
+}
+
+/* =====================================
+   THEME
+===================================== */
+
+function applyTheme(theme) {
+  currentTheme = theme;
+
+  const dark = theme === "dark" ||
+    (theme === "system" &&
+     window.matchMedia("(prefers-color-scheme: dark)").matches);
+
+  document.body.classList.toggle("dark", dark);
+
+  localStorage.setItem(STORAGE.theme, theme);
+
+  const selector = $("#themeSelect");
+  if (selector) selector.value = theme;
+}
+
+$("#themeBtn")?.addEventListener("click", () => {
+  applyTheme(currentTheme === "dark" ? "light" : "dark");
+});
+
+$("#themeSelect")?.addEventListener("change", event => {
+  applyTheme(event.target.value);
+});
+
+applyTheme(currentTheme);
+
+/* =====================================
+   PRODUCT CARD
+===================================== */
+
+function createCard(product) {
   const card = document.createElement("article");
   card.className = "product-card";
 
   const image = document.createElement("img");
   image.src = product.image;
   image.alt = product.name;
+  image.loading = "lazy";
+
+  image.onerror = () => {
+    image.src = "https://placehold.co/400x300?text=Product";
+  };
 
   const name = document.createElement("h3");
   name.textContent = product.name;
 
-  const price = document.createElement("p");
+  const price = document.createElement("div");
   price.className = "product-price";
   price.textContent = "₹" + product.price.toLocaleString("en-IN");
 
   const rating = document.createElement("p");
-  rating.textContent = "Rating: " + product.rating + "/5";
+  rating.textContent = "★ " + product.rating + " / 5";
 
   const store = document.createElement("p");
-  store.textContent = "Lowest listed price: " + product.store;
+  store.textContent = "Listed by: " + product.store;
 
-  const detailsBtn = document.createElement("button");
-  detailsBtn.textContent = "View Details";
-  detailsBtn.onclick = () => showProductDetails(product.id);
+  const details = document.createElement("button");
+  details.textContent = "View Details";
+  details.onclick = () => openProduct(product.id);
 
-  const wishBtn = document.createElement("button");
-  wishBtn.textContent = wishlist.includes(product.id)
-    ? "♥ Saved"
-    : "♡ Wishlist";
+  const wish = document.createElement("button");
+  wish.textContent = wishlist.includes(product.id) ? "♥ Saved" : "♡ Wishlist";
+  wish.onclick = () => toggleWishlist(product.id);
 
-  wishBtn.onclick = () => toggleWishlist(product.id);
+  const add = document.createElement("button");
+  add.textContent = "Add to Cart";
+  add.onclick = () => addToCart(product.id);
 
-  card.append(image, name, price, rating, store, detailsBtn, wishBtn);
+  card.append(image, name, price, rating, store, details, wish, add);
 
   return card;
 }
 
-// ===============================
-// DISPLAY PRODUCTS
-// ===============================
+/* =====================================
+   PRODUCT DISPLAY
+===================================== */
 
 function displayProducts(list, container) {
   if (!container) return;
 
   container.replaceChildren();
 
-  if (list.length === 0) {
+  if (!list.length) {
     const message = document.createElement("p");
     message.textContent = "No products found.";
     container.appendChild(message);
@@ -143,374 +261,824 @@ function displayProducts(list, container) {
   }
 
   list.forEach(product => {
-    container.appendChild(createProductCard(product));
+    container.appendChild(createCard(product));
   });
 }
 
-function loadHomePage() {
-  displayProducts(products, productGrid);
+function loadHome() {
+  displayProducts(products, $("#productGrid"));
 
   const deals = products
-    .filter(product => product.oldPrice > product.price)
+    .filter(p => p.oldPrice > p.price)
     .sort((a, b) => {
-      const discountA = (a.oldPrice - a.price) / a.oldPrice;
-      const discountB = (b.oldPrice - b.price) / b.oldPrice;
-      return discountB - discountA;
+      const da = (a.oldPrice - a.price) / a.oldPrice;
+      const db = (b.oldPrice - b.price) / b.oldPrice;
+      return db - da;
     });
 
-  displayProducts(deals, dealsGrid);
-  displayRecentlyViewed();
+  displayProducts(deals, $("#dealsGrid"));
+  displayRecent();
+
+  const count = $("#productCount");
+  if (count) count.textContent = products.length + " Products";
+
+  updateCartCount();
 }
 
-// ===============================
-// SEARCH
-// ===============================
+/* =====================================
+   SEARCH AND CATEGORY
+===================================== */
 
 function searchProducts() {
-  const query = searchInput.value.trim().toLowerCase();
+  const query = ($("#searchInput")?.value || "").trim().toLowerCase();
 
-  const results = products.filter(product => {
-    const matchesSearch =
-      product.name.toLowerCase().includes(query) ||
-      product.category.toLowerCase().includes(query) ||
-      product.description.toLowerCase().includes(query);
+  const results = products.filter(p => {
+    const text = [
+      p.name,
+      p.category,
+      p.brand,
+      p.description
+    ].join(" ").toLowerCase();
 
+    const matchesQuery = !query || text.includes(query);
     const matchesCategory =
       currentCategory === "All" ||
-      product.category === currentCategory;
+      p.category === currentCategory;
 
-    return matchesSearch && matchesCategory;
+    return matchesQuery && matchesCategory;
   });
 
-  displayProducts(results, productGrid);
+  displayProducts(results, $("#productGrid"));
+
+  const count = $("#productCount");
+  if (count) count.textContent = results.length + " Products";
 }
 
-if (searchBtn) {
-  searchBtn.addEventListener("click", searchProducts);
-}
+$("#searchBtn")?.addEventListener("click", searchProducts);
 
-if (searchInput) {
-  searchInput.addEventListener("keydown", event => {
-    if (event.key === "Enter") searchProducts();
-  });
-}
-
-// ===============================
-// CATEGORY FILTER
-// ===============================
+$("#searchInput")?.addEventListener("keydown", event => {
+  if (event.key === "Enter") searchProducts();
+});
 
 document.querySelectorAll("[data-category]").forEach(button => {
   button.addEventListener("click", () => {
     currentCategory = button.dataset.category;
+
+    document.querySelectorAll("[data-category]").forEach(btn => {
+      btn.classList.toggle("active", btn === button);
+    });
+
     searchProducts();
 
-    document.getElementById("productGrid")
-      ?.scrollIntoView({ behavior: "smooth" });
+    $("#productGrid")?.scrollIntoView({ behavior: "smooth" });
   });
 });
 
-// ===============================
-// WISHLIST
-// ===============================
+$("#exploreBtn")?.addEventListener("click", () => {
+  $("#productGrid")?.scrollIntoView({ behavior: "smooth" });
+});
+
+/* =====================================
+   FILTERS
+===================================== */
+
+function applyFilters() {
+  const query = ($("#searchInput")?.value || "").trim().toLowerCase();
+  const max = Number($("#maxPrice")?.value || 0);
+  const brand = $("#brandFilter")?.value || "All";
+  const sort = $("#sortSelect")?.value || "default";
+
+  let result = products.filter(p => {
+    const text = [p.name, p.category, p.brand, p.description]
+      .join(" ").toLowerCase();
+
+    return (!query || text.includes(query)) &&
+      (currentCategory === "All" || p.category === currentCategory) &&
+      (!max || p.price <= max) &&
+      (brand === "All" || p.brand === brand);
+  });
+
+  if (sort === "low") result.sort((a, b) => a.price - b.price);
+  if (sort === "high") result.sort((a, b) => b.price - a.price);
+  if (sort === "rating") result.sort((a, b) => b.rating - a.rating);
+
+  if (sort === "discount") {
+    result.sort((a, b) => {
+      const da = a.oldPrice ? (a.oldPrice - a.price) / a.oldPrice : 0;
+      const db = b.oldPrice ? (b.oldPrice - b.price) / b.oldPrice : 0;
+      return db - da;
+    });
+  }
+
+  displayProducts(result, $("#productGrid"));
+
+  const count = $("#productCount");
+  if (count) count.textContent = result.length + " Products";
+}
+
+$("#applyFilters")?.addEventListener("click", applyFilters);
+
+$("#clearFilters")?.addEventListener("click", () => {
+  $("#searchInput").value = "";
+  $("#maxPrice").value = "";
+  $("#brandFilter").value = "All";
+  $("#sortSelect").value = "default";
+
+  currentCategory = "All";
+  loadHome();
+});
+
+/* =====================================
+   BRAND FILTER
+===================================== */
+
+function loadBrands() {
+  const selector = $("#brandFilter");
+  if (!selector) return;
+
+  const brands = [...new Set(products.map(p => p.brand).filter(Boolean))];
+
+  selector.replaceChildren();
+
+  const all = document.createElement("option");
+  all.value = "All";
+  all.textContent = "All Brands";
+  selector.appendChild(all);
+
+  brands.forEach(brand => {
+    const option = document.createElement("option");
+    option.value = brand;
+    option.textContent = brand;
+    selector.appendChild(option);
+  });
+}
+
+/* =====================================
+   WISHLIST
+===================================== */
 
 function toggleWishlist(id) {
   if (wishlist.includes(id)) {
     wishlist = wishlist.filter(item => item !== id);
-    showToast("Removed from wishlist");
+    toast("Removed from wishlist.");
   } else {
     wishlist.push(id);
-    showToast("Added to wishlist");
+    toast("Added to wishlist.");
   }
 
-  localStorage.setItem("buyallWishlist", JSON.stringify(wishlist));
+  saveStorage(STORAGE.wishlist, wishlist);
   searchProducts();
 }
 
-document.getElementById("wishlistBtn")?.addEventListener("click", () => {
-  const savedProducts = products.filter(product =>
-    wishlist.includes(product.id)
-  );
-
-  displayProducts(savedProducts, productGrid);
-  showToast("Your wishlist");
-});
-
-// ===============================
-// RECENTLY VIEWED
-// ===============================
-
-function addToRecentlyViewed(id) {
-  recentlyViewed = [
-    id,
-    ...recentlyViewed.filter(item => item !== id)
-  ].slice(0, 8);
-
-  localStorage.setItem("buyallRecent", JSON.stringify(recentlyViewed));
-  displayRecentlyViewed();
+function openWishlist() {
+  openOverlay("My Wishlist", "wishlist");
 }
 
-function displayRecentlyViewed() {
-  const recentProducts = recentlyViewed
-    .map(id => products.find(product => product.id === id))
-    .filter(Boolean);
+$("#wishlistBtn")?.addEventListener("click", openWishlist);
 
-  displayProducts(recentProducts, recentGrid);
+/* =====================================
+   SHOPPING CART
+===================================== */
+
+function addToCart(id) {
+  const item = cart.find(p => p.id === id);
+
+  if (item) item.quantity++;
+  else cart.push({ id, quantity: 1 });
+
+  saveStorage(STORAGE.cart, cart);
+  updateCartCount();
+  toast("Added to cart!");
 }
 
-// ===============================
-// PRODUCT DETAILS
-// ===============================
+function updateCartCount() {
+  const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const button = $("#cartBtn");
 
-function showProductDetails(id) {
-  const product = products.find(item => item.id === id);
-  if (!product) return;
-
-  addToRecentlyViewed(id);
-
-  const message = `
-${product.name}
-
-Price: ₹${product.price.toLocaleString("en-IN")}
-Rating: ${product.rating}/5
-Category: ${product.category}
-
-${product.description}
-
-Price comparison data is not connected yet.
-  `;
-
-  alert(message);
+  if (button) button.textContent = `Cart (${count})`;
 }
 
-// ===============================
-// THEME SWITCH
-// ===============================
+function openCart() {
+  openOverlay("Shopping Cart", "cart");
+}
 
-const themeBtn = document.getElementById("themeBtn");
+$("#cartBtn")?.addEventListener("click", openCart);
 
-function applyTheme(theme) {
-  if (theme === "system") {
-    const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    document.body.classList.toggle("dark", dark);
-  } else {
-    document.body.classList.toggle("dark", theme === "dark");
+function changeQuantity(id, amount) {
+  const item = cart.find(p => p.id === id);
+  if (!item) return;
+
+  item.quantity += amount;
+
+  if (item.quantity <= 0) {
+    cart = cart.filter(p => p.id !== id);
   }
 
-  localStorage.setItem("buyallTheme", theme);
+  saveStorage(STORAGE.cart, cart);
+  openCart();
+  updateCartCount();
 }
 
-if (themeBtn) {
-  themeBtn.addEventListener("click", () => {
-    const current = localStorage.getItem("buyallTheme") || "light";
-    applyTheme(current === "dark" ? "light" : "dark");
+/* =====================================
+   OVERLAY PAGES
+===================================== */
+
+function openOverlay(title, type) {
+  document.getElementById("buyallOverlay")?.remove();
+
+  const overlay = document.createElement("div");
+  overlay.id = "buyallOverlay";
+
+  Object.assign(overlay.style, {
+    position: "fixed",
+    inset: "0",
+    background: "var(--background)",
+    color: "var(--text)",
+    zIndex: "10005",
+    overflowY: "auto",
+    padding: "20px"
   });
+
+  const panel = document.createElement("div");
+  panel.style.maxWidth = "1000px";
+  panel.style.margin = "auto";
+
+  const heading = document.createElement("h1");
+  heading.textContent = title;
+
+  const close = document.createElement("button");
+  close.textContent = "← Back to Shopping";
+  close.style.cssText =
+    "padding:12px;background:#2878e8;color:white;border:0;border-radius:8px;margin-bottom:20px";
+
+  close.onclick = () => overlay.remove();
+
+  const content = document.createElement("div");
+
+  panel.append(close, heading, content);
+  overlay.appendChild(panel);
+  document.body.appendChild(overlay);
+
+  if (type === "wishlist") {
+    const saved = products.filter(p => wishlist.includes(p.id));
+    displayProducts(saved, content);
+  }
+
+  if (type === "cart") {
+    renderCart(content);
+  }
 }
 
-applyTheme(localStorage.getItem("buyallTheme") || "light");
+function renderCart(container) {
+  container.replaceChildren();
 
-// ===============================
-// ACCOUNT BUTTON
-// ===============================
+  let total = 0;
 
-document.getElementById("accountBtn")?.addEventListener("click", () => {
-  showToast("Account system will be connected later.");
-});
-
-// ===============================
-// CART BUTTON
-// ===============================
-
-document.getElementById("cartBtn")?.addEventListener("click", () => {
-  showToast("Shopping cart will be added soon.");
-});
-
-// ===============================
-// TOAST MESSAGE
-// ===============================
-
-function showToast(message) {
-  const toast = document.getElementById("toast");
-  if (!toast) {
-    alert(message);
+  if (!cart.length) {
+    container.textContent = "Your cart is empty.";
     return;
   }
 
-  toast.textContent = message;
-  toast.classList.add("show");
+  cart.forEach(item => {
+    const product = products.find(p => p.id === item.id);
+    if (!product) return;
 
-  setTimeout(() => {
-    toast.classList.remove("show");
-  }, 2500);
-}
+    total += product.price * item.quantity;
 
-// ===============================
-// START WEBSITE
-// ===============================
+    const row = document.createElement("div");
+    row.style.cssText =
+      "padding:15px;border:1px solid var(--border);margin:12px 0;border-radius:10px";
 
-loadHomePage();
+    const name = document.createElement("h3");
+    name.textContent = product.name;
 
-console.log("buyall website loaded successfully!");
-// ======================================
-// BUYALL EXTRA FEATURES
-// ======================================
+    const price = document.createElement("p");
+    price.textContent =
+      "₹" + (product.price * item.quantity).toLocaleString("en-IN");
 
-// VIP ACCESS
-const VIP_CODE = "0987654321";
+    const quantity = document.createElement("p");
+    quantity.textContent = "Quantity: " + item.quantity;
 
-function openVIP() {
-  const code = prompt(
-    "BUYALL VIP ACCESS\nVIP Price: ₹399\nEnter your Access Code:"
-  );
+    const minus = document.createElement("button");
+    minus.textContent = "−";
+    minus.onclick = () => changeQuantity(item.id, -1);
 
-  if (code === VIP_CODE) {
-    localStorage.setItem("buyallVIP", "true");
-    showToast("VIP Access Unlocked!");
-  } else if (code !== null) {
-    showToast("Incorrect Access Code!");
-  }
-}
+    const plus = document.createElement("button");
+    plus.textContent = "+";
+    plus.onclick = () => changeQuantity(item.id, 1);
 
-const vipButton = document.createElement("button");
-vipButton.textContent = "VIP Access ₹399";
-vipButton.onclick = openVIP;
-document.querySelector(".header")?.appendChild(vipButton);
+    const remove = document.createElement("button");
+    remove.textContent = "Remove";
+    remove.onclick = () => changeQuantity(item.id, -item.quantity);
 
-
-// ======================================
-// PRICE COMPARISON
-// ======================================
-
-const comparisonStores = [
-  { name: "Store A", price: 1299 },
-  { name: "Store B", price: 1199 },
-  { name: "Store C", price: 1399 }
-];
-
-function showPriceComparison(product) {
-  const prices = comparisonStores
-    .slice()
-    .sort((a, b) => a.price - b.price);
-
-  let result = "PRICE COMPARISON\n\n";
-
-  prices.forEach(store => {
-    result += `${store.name}: ₹${store.price}\n`;
+    row.append(name, price, quantity, minus, plus, remove);
+    container.appendChild(row);
   });
 
-  result += "\nLowest listed price: ₹" + prices[0].price;
-  alert(result);
+  const totalText = document.createElement("h2");
+  totalText.textContent = "Total: ₹" + total.toLocaleString("en-IN");
+  container.appendChild(totalText);
+
+  const checkout = document.createElement("button");
+  checkout.textContent = "Proceed to Checkout";
+  checkout.style.cssText =
+    "padding:13px;background:#2878e8;color:white;border:0;border-radius:8px";
+
+  checkout.onclick = () => toast("Real checkout is not connected yet.");
+
+  container.appendChild(checkout);
 }
 
+/* =====================================
+   PRODUCT DETAILS
+===================================== */
 
-// ======================================
-// PRODUCT LINK COMPARISON
-// ======================================
+function openProduct(id) {
+  const p = products.find(item => item.id === id);
+  if (!p) return;
 
-function compareProductLink() {
-  const link = prompt("Paste a product link:");
+  recent = [id, ...recent.filter(item => item !== id)].slice(0, 8);
+  saveStorage(STORAGE.recent, recent);
+  displayRecent();
 
-  if (!link) return;
+  document.getElementById("buyallOverlay")?.remove();
+
+  const overlay = document.createElement("div");
+  overlay.id = "buyallOverlay";
+  overlay.style.cssText =
+    "position:fixed;inset:0;z-index:10005;background:var(--background);color:var(--text);overflow:auto;padding:20px";
+
+  const panel = document.createElement("div");
+  panel.style.cssText =
+    "max-width:950px;margin:auto;background:var(--surface);padding:20px;border-radius:15px";
+
+  const back = document.createElement("button");
+  back.textContent = "← Back";
+  back.onclick = () => overlay.remove();
+
+  const layout = document.createElement("div");
+  layout.style.cssText =
+    "display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:25px;margin:20px 0";
+
+  const image = document.createElement("img");
+  image.src = p.image;
+  image.alt = p.name;
+  image.style.cssText = "width:100%;max-height:350px;object-fit:contain";
+
+  const info = document.createElement("div");
+
+  const title = document.createElement("h1");
+  title.textContent = p.name;
+
+  const price = document.createElement("h2");
+  price.textContent = "₹" + p.price.toLocaleString("en-IN");
+
+  const description = document.createElement("p");
+  description.textContent = p.description;
+
+  const rating = document.createElement("p");
+  rating.textContent = "Rating: " + p.rating + "/5";
+
+  const add = document.createElement("button");
+  add.textContent = "Add to Cart";
+  add.onclick = () => addToCart(p.id);
+
+  const wish = document.createElement("button");
+  wish.textContent = "♡ Wishlist";
+  wish.onclick = () => toggleWishlist(p.id);
+
+  info.append(title, price, description, rating, add, wish);
+  layout.append(image, info);
+
+  const comparison = document.createElement("p");
+  comparison.textContent =
+    "Live retailer price comparison is not connected. This is the currently listed sample price.";
+
+  const reviewTitle = document.createElement("h2");
+  reviewTitle.textContent = "Customer Reviews";
+
+  const reviewList = document.createElement("div");
+  renderReviews(p.id, reviewList);
+
+  const ratingSelect = document.createElement("select");
+
+  [5, 4, 3, 2, 1].forEach(value => {
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = "★".repeat(value);
+    ratingSelect.appendChild(option);
+  });
+
+  const textarea = document.createElement("textarea");
+  textarea.placeholder = "Write your review";
+  textarea.style.cssText =
+    "display:block;width:100%;min-height:90px;padding:12px;margin:12px 0";
+
+  const submit = document.createElement("button");
+  submit.textContent = "Submit Review";
+
+  submit.onclick = () => {
+    const text = textarea.value.trim();
+
+    if (!text) {
+      toast("Please write a review.");
+      return;
+    }
+
+    reviews[p.id] = reviews[p.id] || [];
+
+    reviews[p.id].push({
+      text,
+      rating: Number(ratingSelect.value),
+      date: new Date().toLocaleDateString()
+    });
+
+    saveStorage(STORAGE.reviews, reviews);
+    textarea.value = "";
+    renderReviews(p.id, reviewList);
+    toast("Review saved on this device.");
+  };
+
+  const alertButton = document.createElement("button");
+  alertButton.textContent = "Set Price Alert";
+
+  alertButton.onclick = () => {
+    const target = Number(prompt("Enter target price ₹:"));
+
+    if (!Number.isFinite(target) || target <= 0) {
+      toast("Enter a valid price.");
+      return;
+    }
+
+    alerts.push({ id: p.id, target });
+    saveStorage(STORAGE.alerts, alerts);
+    toast("Price alert saved locally.");
+  };
+
+  panel.append(
+    back, layout, comparison, reviewTitle,
+    reviewList, ratingSelect, textarea, submit, alertButton
+  );
+
+  overlay.appendChild(panel);
+  document.body.appendChild(overlay);
+}
+
+function renderReviews(id, container) {
+  container.replaceChildren();
+
+  const list = reviews[id] || [];
+
+  if (!list.length) {
+    container.textContent = "No reviews yet.";
+    return;
+  }
+
+  list.forEach(review => {
+    const item = document.createElement("div");
+    item.style.cssText =
+      "padding:12px;margin:10px 0;background:var(--background);border-radius:8px";
+
+    const heading = document.createElement("strong");
+    heading.textContent = "★".repeat(review.rating);
+
+    const comment = document.createElement("p");
+    comment.textContent = review.text;
+
+    const date = document.createElement("small");
+    date.textContent = review.date;
+
+    item.append(heading, comment, date);
+    container.appendChild(item);
+  });
+}
+
+/* =====================================
+   RECENTLY VIEWED
+===================================== */
+
+function displayRecent() {
+  const list = recent
+    .map(id => products.find(p => p.id === id))
+    .filter(Boolean);
+
+  displayProducts(list, $("#recentGrid"));
+}
+
+/* =====================================
+   VIP ACCESS
+===================================== */
+
+$("#vipBtn")?.addEventListener("click", () => {
+  if (localStorage.getItem(STORAGE.vip) === "true") {
+    toast("VIP Access is already unlocked.");
+    return;
+  }
+
+  const code = prompt("VIP Access ₹399\nEnter Access Code:");
+
+  if (code === null) return;
+
+  if (code === "0987654321") {
+    localStorage.setItem(STORAGE.vip, "true");
+    toast("VIP access unlocked!");
+  } else {
+    toast("Incorrect access code.");
+  }
+});
+
+/* =====================================
+   PRODUCT LINK SAVING
+===================================== */
+
+$("#compareBtn")?.addEventListener("click", () => {
+  const field = $("#compareLink");
+  const message = $("#compareMessage");
 
   try {
-    const url = new URL(link);
+    const url = new URL(field.value.trim());
 
     if (!["http:", "https:"].includes(url.protocol)) {
       throw new Error("Invalid URL");
     }
 
-    showToast("Product link saved for comparison.");
-    localStorage.setItem("buyallCompareLink", url.href);
+    localStorage.setItem(STORAGE.compare, url.href);
+
+    message.textContent =
+      "Link saved. Live retailer comparison needs product integration.";
+
+    toast("Product link saved.");
   } catch {
-    showToast("Please enter a valid product link.");
+    message.textContent = "Please enter a valid product URL.";
   }
+});
+
+/* =====================================
+   LANGUAGE
+===================================== */
+
+const translations = {
+  English: {
+    search: "Search products, brands and more...",
+    trending: "Trending Products",
+    deals: "Best Deals",
+    recent: "Recently Viewed"
+  },
+  Bengali: {
+    search: "পণ্য, ব্র্যান্ড খুঁজুন...",
+    trending: "জনপ্রিয় পণ্য",
+    deals: "সেরা অফার",
+    recent: "সম্প্রতি দেখা"
+  },
+  Hindi: {
+    search: "उत्पाद और ब्रांड खोजें...",
+    trending: "लोकप्रिय उत्पाद",
+    deals: "सबसे अच्छे ऑफर",
+    recent: "हाल ही में देखे गए"
+  }
+};
+
+function changeLanguage(language) {
+  const t = translations[language] || translations.English;
+
+  $("#searchInput").placeholder = t.search;
+
+  const headings = document.querySelectorAll(".section-heading h2");
+
+  if (headings[0]) headings[0].textContent = t.trending;
+  if (headings[1]) headings[1].textContent = t.deals;
+  if (headings[2]) headings[2].textContent = t.recent;
+
+  localStorage.setItem(STORAGE.language, language);
 }
 
-const compareButton = document.createElement("button");
-compareButton.textContent = "Compare Product Link";
-compareButton.onclick = compareProductLink;
-document.querySelector(".header")?.appendChild(compareButton);
+const languageSelect = $("#languageSelect");
 
+if (languageSelect) {
+  languageSelect.value =
+    localStorage.getItem(STORAGE.language) || "English";
 
-// ======================================
-// BUYALL PENGUIN MASCOT
-// ======================================
+  languageSelect.addEventListener("change", event => {
+    changeLanguage(event.target.value);
+  });
+
+  changeLanguage(languageSelect.value);
+}
+
+/* =====================================
+   ACCOUNT
+===================================== */
+
+$("#accountBtn")?.addEventListener("click", () => {
+  toast("Account registration requires a secure backend.");
+});
+
+/* =====================================
+   ADMIN DASHBOARD
+===================================== */
+
+function openAdmin() {
+  const password = prompt("Enter Admin Password:");
+
+  if (password !== "BUYALLADMIN") {
+    if (password !== null) toast("Access denied.");
+    return;
+  }
+
+  const overlay = document.createElement("div");
+  overlay.id = "buyallAdminPanel";
+  overlay.style.cssText =
+    "position:fixed;inset:0;background:var(--background);color:var(--text);z-index:10010;overflow:auto;padding:20px";
+
+  const panel = document.createElement("div");
+  panel.style.cssText = "max-width:800px;margin:auto";
+
+  const heading = document.createElement("h1");
+  heading.textContent = "BUYALL ADMIN DASHBOARD";
+
+  const close = document.createElement("button");
+  close.textContent = "Close";
+  close.onclick = () => overlay.remove();
+
+  const name = document.createElement("input");
+  name.placeholder = "Product Name";
+
+  const price = document.createElement("input");
+  price.type = "number";
+  price.placeholder = "Product Price";
+
+  const category = document.createElement("input");
+  category.placeholder = "Category";
+
+  const brand = document.createElement("input");
+  brand.placeholder = "Brand";
+
+  const image = document.createElement("input");
+  image.placeholder = "Image URL";
+
+  const description = document.createElement("textarea");
+  description.placeholder = "Product description";
+
+  [name, price, category, brand, image, description].forEach(input => {
+    input.style.cssText =
+      "display:block;width:100%;padding:12px;margin:10px 0;border:1px solid var(--border);border-radius:8px";
+  });
+
+  const add = document.createElement("button");
+  add.textContent = "Add Product";
+
+  add.onclick = () => {
+    const productName = name.value.trim();
+    const amount = Number(price.value);
+    const productCategory = category.value.trim();
+
+    if (!productName || !productCategory || amount <= 0) {
+      toast("Enter valid product details.");
+      return;
+    }
+
+    const product = {
+      id: Date.now(),
+      name: productName,
+      price: amount,
+      oldPrice: amount,
+      category: productCategory,
+      brand: brand.value.trim() || "Other",
+      rating: 0,
+      image: image.value.trim() || "https://placehold.co/400x300?text=Product",
+      store: "Admin listing",
+      description: description.value.trim()
+    };
+
+    products.push(product);
+    saveStorage(STORAGE.products, products);
+
+    loadBrands();
+    loadHome();
+    toast("Product added.");
+
+    name.value = "";
+    price.value = "";
+    category.value = "";
+    brand.value = "";
+    image.value = "";
+    description.value = "";
+  };
+
+  const exportButton = document.createElement("button");
+  exportButton.textContent = "Export Product Data";
+
+  exportButton.onclick = () => {
+    const blob = new Blob(
+      [JSON.stringify(products, null, 2)],
+      { type: "application/json" }
+    );
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = "buyall-products.json";
+    link.click();
+
+    URL.revokeObjectURL(url);
+  };
+
+  panel.append(
+    heading, close, name, price, category,
+    brand, image, description, add, exportButton
+  );
+
+  overlay.appendChild(panel);
+  document.body.appendChild(overlay);
+}
+
+const adminButton = document.createElement("button");
+adminButton.textContent = "Admin";
+adminButton.onclick = openAdmin;
+adminButton.style.cssText =
+  "padding:9px 12px;background:#eaf2ff;color:#2878e8;border-radius:8px;margin:5px";
+
+$(".header-actions")?.appendChild(adminButton);
+
+/* =====================================
+   PENGUIN MASCOT
+===================================== */
 
 const penguinStyle = document.createElement("style");
 
 penguinStyle.textContent = `
 #buyallPenguin {
-  position: fixed;
-  bottom: 18px;
-  right: 15px;
-  z-index: 9999;
-  width: 85px;
-  cursor: pointer;
-  text-align: center;
-  font-family: Arial, sans-serif;
+  position:fixed;
+  right:15px;
+  bottom:15px;
+  z-index:9000;
+  width:75px;
+  cursor:pointer;
+  text-align:center;
+  font-family:Arial,sans-serif;
 }
 
-#buyallPenguin .penguin-body {
-  width: 65px;
-  height: 78px;
-  background: #20252d;
-  border-radius: 48% 48% 42% 42%;
-  margin: auto;
-  position: relative;
-  box-shadow: 0 5px 12px #0002;
+#buyallPenguin .body {
+  height:76px;
+  width:62px;
+  margin:auto;
+  background:#20252d;
+  border-radius:48% 48% 42% 42%;
+  position:relative;
+  box-shadow:0 5px 15px #0002;
 }
 
-#buyallPenguin .penguin-face {
-  position: absolute;
-  width: 43px;
-  height: 48px;
-  background: white;
-  border-radius: 50%;
-  top: 12px;
-  left: 11px;
+#buyallPenguin .face {
+  position:absolute;
+  background:white;
+  width:43px;
+  height:48px;
+  left:9px;
+  top:12px;
+  border-radius:50%;
 }
 
-#buyallPenguin .penguin-eyes {
-  position: absolute;
-  top: 15px;
-  left: 11px;
-  font-size: 12px;
-  color: black;
+#buyallPenguin .eyes {
+  position:absolute;
+  top:14px;
+  left:9px;
+  font-size:11px;
+  color:black;
 }
 
-#buyallPenguin .penguin-beak {
-  position: absolute;
-  top: 27px;
-  left: 17px;
-  width: 0;
-  height: 0;
-  border-left: 7px solid transparent;
-  border-right: 7px solid transparent;
-  border-top: 9px solid #ff9d26;
+#buyallPenguin .beak {
+  position:absolute;
+  top:29px;
+  left:16px;
+  border-left:6px solid transparent;
+  border-right:6px solid transparent;
+  border-top:8px solid #ff9d26;
 }
 
-#buyallPenguin .penguin-message {
-  display: none;
-  position: absolute;
-  bottom: 88px;
-  right: 0;
-  width: 165px;
-  padding: 10px;
-  background: white;
-  color: #222;
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  box-shadow: 0 3px 12px #0002;
-  font-size: 12px;
+#buyallPenguin .feet {
+  color:#ff9d26;
+  font-size:18px;
+  margin-top:-4px;
 }
 
-#buyallPenguin.active .penguin-message {
-  display: block;
+#buyallPenguin .message {
+  display:none;
+  position:absolute;
+  right:0;
+  bottom:90px;
+  width:170px;
+  padding:12px;
+  background:white;
+  color:#222;
+  border:1px solid #ddd;
+  border-radius:12px;
+  box-shadow:0 4px 15px #0002;
+  font-size:12px;
 }
 
-#buyallPenguin .penguin-feet {
-  color: #ff9d26;
-  font-size: 20px;
-  margin-top: -5px;
+#buyallPenguin.active .message {
+  display:block;
 }
 `;
 
@@ -520,16 +1088,16 @@ const penguin = document.createElement("div");
 penguin.id = "buyallPenguin";
 
 penguin.innerHTML = `
-  <div class="penguin-message" id="penguinMessage">
-    Welcome to buyall! Let's find great deals!
+  <div class="message" id="penguinMessage">
+    Welcome to buyall!
   </div>
-  <div class="penguin-body">
-    <div class="penguin-face">
-      <div class="penguin-eyes">●　●</div>
-      <div class="penguin-beak"></div>
+  <div class="body">
+    <div class="face">
+      <div class="eyes">●　●</div>
+      <div class="beak"></div>
     </div>
   </div>
-  <div class="penguin-feet">⌄　⌄</div>
+  <div class="feet">⌄　⌄</div>
 `;
 
 document.body.appendChild(penguin);
@@ -539,7 +1107,7 @@ penguin.addEventListener("click", () => {
 });
 
 function penguinTalk(message) {
-  document.getElementById("penguinMessage").textContent = message;
+  $("#penguinMessage").textContent = message;
   penguin.classList.add("active");
 }
 
@@ -547,952 +1115,31 @@ if (!localStorage.getItem("buyallWelcomed")) {
   setTimeout(() => {
     penguinTalk("Hello! Welcome to buyall!");
     localStorage.setItem("buyallWelcomed", "true");
-  }, 1500);
+  }, 1800);
 }
 
+/* =====================================
+   PRICE ALERT CHECK
+===================================== */
 
-// ======================================
-// ACHIEVEMENT MESSAGES
-// ======================================
+function checkPriceAlerts() {
+  alerts.forEach(alert => {
+    const product = products.find(p => p.id === alert.id);
 
-function celebrateAchievement(message) {
-  penguinTalk(message);
+    if (product && product.price <= alert.target) {
+      penguinTalk("Your saved price target has been reached!");
 
-  if ("vibrate" in navigator) {
-    navigator.vibrate(100);
-  }
-}
-
-
-// ======================================
-// PRICE ALERT
-// ======================================
-
-function setPriceAlert(productId, targetPrice) {
-  const alerts = JSON.parse(
-    localStorage.getItem("buyallPriceAlerts") || "[]"
-  );
-
-  alerts.push({
-    productId: productId,
-    targetPrice: Number(targetPrice)
-  });
-
-  localStorage.setItem(
-    "buyallPriceAlerts",
-    JSON.stringify(alerts)
-  );
-
-  showToast("Price alert saved!");
-}
-
-
-// ======================================
-// FILTER BY PRICE
-// ======================================
-
-function filterByMaximumPrice(maxPrice) {
-  const filtered = products.filter(
-    product => product.price <= Number(maxPrice)
-  );
-
-  displayProducts(filtered, productGrid);
-}
-
-
-// ======================================
-// SORT PRICE
-// ======================================
-
-function sortProductsByPrice(order = "low") {
-  const sorted = [...products].sort((a, b) => {
-    return order === "low"
-      ? a.price - b.price
-      : b.price - a.price;
-  });
-
-  displayProducts(sorted, productGrid);
-}
-
-
-// ======================================
-// RANDOM PENGUIN REACTIONS
-// ======================================
-
-const penguinMessages = [
-  "Great choice!",
-  "Let's find a better price!",
-  "Keep exploring!",
-  "You are doing great!",
-  "Happy shopping!"
-];
-
-function randomPenguinReaction() {
-  const message = penguinMessages[
-    Math.floor(Math.random() * penguinMessages.length)
-  ];
-
-  celebrateAchievement(message);
-}
-
-console.log("buyall extra features loaded!");
-// ======================================
-// BUYALL ADMIN DASHBOARD
-// ======================================
-
-function openAdminDashboard() {
-  const password = prompt("Enter Admin Password:");
-
-  if (password !== "BUYALLADMIN") {
-    showToast("Access Denied!");
-    return;
-  }
-
-  const dashboard = document.createElement("div");
-
-  dashboard.id = "buyallAdmin";
-
-  dashboard.innerHTML = `
-    <div class="admin-panel">
-      <button id="closeAdmin">✕</button>
-      <h2>BUYALL ADMIN</h2>
-
-      <h3>Dashboard Overview</h3>
-      <p>Total Products: ${products.length}</p>
-      <p>Wishlist Items: ${wishlist.length}</p>
-
-      <h3>Add New Product</h3>
-
-      <input id="adminName" placeholder="Product Name">
-      <input id="adminPrice" type="number" placeholder="Price">
-      <input id="adminCategory" placeholder="Category">
-      <input id="adminImage" placeholder="Image URL">
-
-      <button id="addAdminProduct">Add Product</button>
-      <button id="adminExport">Export Products</button>
-    </div>
-  `;
-
-  document.body.appendChild(dashboard);
-
-  document.getElementById("closeAdmin").onclick = () => {
-    dashboard.remove();
-  };
-
-  document.getElementById("addAdminProduct").onclick = () => {
-    const name = document.getElementById("adminName").value.trim();
-    const price = Number(document.getElementById("adminPrice").value);
-    const category = document.getElementById("adminCategory").value.trim();
-    const image = document.getElementById("adminImage").value.trim();
-
-    if (!name || !price || price <= 0 || !category) {
-      alert("Please enter valid product details.");
-      return;
-    }
-
-    const newProduct = {
-      id: Date.now(),
-      name,
-      price,
-      oldPrice: price,
-      rating: 0,
-      category,
-      image: image || "https://placehold.co/400x300?text=Product",
-      store: "Not connected",
-      description: "Product added by admin."
-    };
-
-    products.push(newProduct);
-
-    localStorage.setItem(
-      "buyallProducts",
-      JSON.stringify(products)
-    );
-
-    loadHomePage();
-    showToast("Product added!");
-
-    dashboard.remove();
-  };
-
-  document.getElementById("adminExport").onclick = () => {
-    const file = new Blob(
-      [JSON.stringify(products, null, 2)],
-      { type: "application/json" }
-    );
-
-    const url = URL.createObjectURL(file);
-    const link = document.createElement("a");
-
-    link.href = url;
-    link.download = "buyall-products.json";
-    link.click();
-
-    URL.revokeObjectURL(url);
-  };
-}
-
-
-// ======================================
-// ADMIN BUTTON
-// ======================================
-
-const adminButton = document.createElement("button");
-adminButton.textContent = "Admin";
-adminButton.onclick = openAdminDashboard;
-
-document.querySelector(".header")?.appendChild(adminButton);
-
-
-// ======================================
-// ADMIN STYLE
-// ======================================
-
-const adminStyle = document.createElement("style");
-
-adminStyle.textContent = `
-#buyallAdmin {
-  position: fixed;
-  inset: 0;
-  background: #0009;
-  z-index: 10000;
-  display: grid;
-  place-items: center;
-  padding: 15px;
-}
-
-.admin-panel {
-  background: white;
-  color: #222;
-  width: min(450px, 100%);
-  max-height: 90vh;
-  overflow-y: auto;
-  padding: 22px;
-  border-radius: 16px;
-}
-
-.admin-panel input {
-  display: block;
-  width: 100%;
-  padding: 12px;
-  margin: 10px 0;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-}
-
-.admin-panel button {
-  padding: 10px 14px;
-  margin: 5px;
-  cursor: pointer;
-  border: none;
-  border-radius: 8px;
-  background: #2878e8;
-  color: white;
-}
-`;
-
-document.head.appendChild(adminStyle);
-
-
-// ======================================
-// ADVANCED SEARCH
-// ======================================
-
-function advancedSearch(query) {
-  const words = query.toLowerCase().split(/\s+/).filter(Boolean);
-
-  const results = products.filter(product => {
-    const text = (
-      product.name + " " +
-      product.category + " " +
-      product.description
-    ).toLowerCase();
-
-    return words.every(word => text.includes(word));
-  });
-
-  displayProducts(results, productGrid);
-
-  if (results.length === 0) {
-    showToast("No matching products found.");
-  }
-}
-
-
-// ======================================
-// LANGUAGE SYSTEM
-// ======================================
-
-const buyallLanguages = {
-  English: {
-    search: "Search products...",
-    trending: "Trending Products",
-    deals: "Best Deals",
-    recent: "Recently Viewed"
-  },
-
-  Bengali: {
-    search: "পণ্য খুঁজুন...",
-    trending: "জনপ্রিয় পণ্য",
-    deals: "সেরা অফার",
-    recent: "সম্প্রতি দেখা"
-  },
-
-  Hindi: {
-    search: "उत्पाद खोजें...",
-    trending: "लोकप्रिय उत्पाद",
-    deals: "सबसे अच्छे ऑफर",
-    recent: "हाल ही में देखे गए"
-  }
-};
-
-function changeBuyallLanguage(language) {
-  const selected = buyallLanguages[language];
-
-  if (!selected) {
-    showToast("Language not available yet.");
-    return;
-  }
-
-  if (searchInput) {
-    searchInput.placeholder = selected.search;
-  }
-
-  const headings = document.querySelectorAll("h2");
-
-  if (headings[0]) headings[0].textContent = selected.trending;
-  if (headings[1]) headings[1].textContent = selected.deals;
-  if (headings[2]) headings[2].textContent = selected.recent;
-
-  localStorage.setItem("buyallLanguage", language);
-}
-
-
-// ======================================
-// LANGUAGE SELECTOR
-// ======================================
-
-const languageSelector = document.createElement("select");
-
-languageSelector.innerHTML = `
-  <option value="English">English</option>
-  <option value="Bengali">বাংলা</option>
-  <option value="Hindi">हिन्दी</option>
-`;
-
-languageSelector.value =
-  localStorage.getItem("buyallLanguage") || "English";
-
-languageSelector.onchange = () => {
-  changeBuyallLanguage(languageSelector.value);
-};
-
-document.querySelector(".header")?.appendChild(languageSelector);
-
-changeBuyallLanguage(languageSelector.value);
-
-
-// ======================================
-// BUYALL SETTINGS
-// ======================================
-
-function openBuyallSettings() {
-  const settings = document.createElement("div");
-
-  settings.style.cssText = `
-    position:fixed;
-    inset:0;
-    background:#0008;
-    z-index:10001;
-    display:grid;
-    place-items:center;
-    padding:15px;
-  `;
-
-  settings.innerHTML = `
-    <div style="
-      background:white;
-      color:#222;
-      padding:22px;
-      border-radius:15px;
-      width:min(350px,100%);
-    ">
-      <h2>Settings</h2>
-
-      <label>
-        Theme:
-        <select id="settingTheme">
-          <option value="light">Light</option>
-          <option value="dark">Dark</option>
-        </select>
-      </label>
-
-      <br><br>
-
-      <button id="saveSettings">Save Settings</button>
-      <button id="closeSettings">Close</button>
-    </div>
-  `;
-
-  document.body.appendChild(settings);
-
-  const themeSelect = settings.querySelector("#settingTheme");
-
-  themeSelect.value =
-    localStorage.getItem("buyallTheme") || "light";
-
-  settings.querySelector("#saveSettings").onclick = () => {
-    applyTheme(themeSelect.value);
-    settings.remove();
-    showToast("Settings saved!");
-  };
-
-  settings.querySelector("#closeSettings").onclick = () => {
-    settings.remove();
-  };
-}
-
-const settingsButton = document.createElement("button");
-settingsButton.textContent = "Settings";
-settingsButton.onclick = openBuyallSettings;
-
-document.querySelector(".header")?.appendChild(settingsButton);
-
-console.log("BUYALL ADMIN AND SETTINGS READY!");
-// ======================================
-// BUYALL PRODUCT DETAILS PAGE
-// ======================================
-
-function openProductPage(id) {
-  const product = products.find(p => p.id === id);
-  if (!product) return;
-
-  addToRecentlyViewed(id);
-
-  const page = document.createElement("div");
-  page.id = "buyallProductPage";
-
-  page.innerHTML = `
-    <div class="product-page">
-      <button id="backToShop">← Back to Shopping</button>
-
-      <div class="product-info">
-        <img id="detailImage" alt="Product image">
-
-        <div>
-          <h1 id="detailName"></h1>
-          <h2 id="detailPrice"></h2>
-          <p id="detailCategory"></p>
-          <p id="detailRating"></p>
-
-          <button id="detailWishlist">♡ Add to Wishlist</button>
-          <button id="detailAlert">Set Price Alert</button>
-        </div>
-      </div>
-
-      <h2>Product Description</h2>
-      <p id="detailDescription"></p>
-
-      <h2>Price Comparison</h2>
-      <div id="detailComparison"></div>
-
-      <h2>Customer Reviews</h2>
-      <div id="reviewList"></div>
-
-      <h3>Write a Review</h3>
-      <select id="reviewRating">
-        <option value="5">★★★★★</option>
-        <option value="4">★★★★</option>
-        <option value="3">★★★</option>
-        <option value="2">★★</option>
-        <option value="1">★</option>
-      </select>
-
-      <textarea id="reviewText" placeholder="Write your review"></textarea>
-      <button id="submitReview">Submit Review</button>
-    </div>
-  `;
-
-  document.body.appendChild(page);
-
-  document.getElementById("detailImage").src = product.image;
-  document.getElementById("detailName").textContent = product.name;
-  document.getElementById("detailPrice").textContent =
-    "₹" + product.price.toLocaleString("en-IN");
-
-  document.getElementById("detailCategory").textContent =
-    "Category: " + product.category;
-
-  document.getElementById("detailRating").textContent =
-    "Rating: " + product.rating + "/5";
-
-  document.getElementById("detailDescription").textContent =
-    product.description;
-
-  document.getElementById("backToShop").onclick = () => page.remove();
-
-  document.getElementById("detailWishlist").onclick = () => {
-    toggleWishlist(product.id);
-    document.getElementById("detailWishlist").textContent =
-      wishlist.includes(product.id)
-        ? "♥ Saved"
-        : "♡ Add to Wishlist";
-  };
-
-  document.getElementById("detailAlert").onclick = () => {
-    const target = prompt("Enter your target price in ₹:");
-
-    if (target !== null && Number(target) > 0) {
-      setPriceAlert(product.id, Number(target));
-    }
-  };
-
-  // Price comparison data is clearly marked as sample.
-  const comparison = document.getElementById("detailComparison");
-
-  comparison.textContent =
-    "Live retailer prices are not connected yet. Current listed price: ₹" +
-    product.price.toLocaleString("en-IN");
-
-  displayReviews(product.id);
-
-  document.getElementById("submitReview").onclick = () => {
-    const text = document.getElementById("reviewText").value.trim();
-    const rating = Number(
-      document.getElementById("reviewRating").value
-    );
-
-    if (!text) {
-      showToast("Please write a review.");
-      return;
-    }
-
-    const allReviews = JSON.parse(
-      localStorage.getItem("buyallReviews") || "{}"
-    );
-
-    allReviews[product.id] = allReviews[product.id] || [];
-
-    allReviews[product.id].push({
-      text,
-      rating,
-      date: new Date().toLocaleDateString()
-    });
-
-    localStorage.setItem(
-      "buyallReviews",
-      JSON.stringify(allReviews)
-    );
-
-    document.getElementById("reviewText").value = "";
-
-    displayReviews(product.id);
-    showToast("Review added!");
-  };
-}
-
-
-// ======================================
-// REVIEW SYSTEM
-// ======================================
-
-function displayReviews(productId) {
-  const container = document.getElementById("reviewList");
-  if (!container) return;
-
-  container.replaceChildren();
-
-  const allReviews = JSON.parse(
-    localStorage.getItem("buyallReviews") || "{}"
-  );
-
-  const reviews = allReviews[productId] || [];
-
-  if (reviews.length === 0) {
-    container.textContent = "No reviews yet.";
-    return;
-  }
-
-  reviews.forEach(review => {
-    const item = document.createElement("div");
-    item.className = "buyall-review";
-
-    const title = document.createElement("strong");
-    title.textContent = "Rating: " + "★".repeat(review.rating);
-
-    const comment = document.createElement("p");
-    comment.textContent = review.text;
-
-    const date = document.createElement("small");
-    date.textContent = review.date;
-
-    item.append(title, comment, date);
-    container.appendChild(item);
-  });
-}
-
-
-// ======================================
-// WISHLIST PAGE
-// ======================================
-
-function openWishlistPage() {
-  const page = document.createElement("div");
-  page.id = "buyallWishlistPage";
-
-  page.innerHTML = `
-    <div class="wishlist-page">
-      <button id="closeWishlistPage">← Back</button>
-      <h1>My Wishlist</h1>
-      <div id="wishlistProducts" class="product-grid"></div>
-    </div>
-  `;
-
-  document.body.appendChild(page);
-
-  document.getElementById("closeWishlistPage").onclick = () => {
-    page.remove();
-  };
-
-  const saved = products.filter(p => wishlist.includes(p.id));
-
-  displayProducts(
-    saved,
-    document.getElementById("wishlistProducts")
-  );
-}
-
-
-// ======================================
-// PRODUCT PAGE DESIGN
-// ======================================
-
-const productPageStyle = document.createElement("style");
-
-productPageStyle.textContent = `
-#buyallProductPage,
-#buyallWishlistPage {
-  position:fixed;
-  inset:0;
-  z-index:9998;
-  background:#f5f8fc;
-  color:#222;
-  overflow-y:auto;
-  padding:20px;
-}
-
-.product-page,
-.wishlist-page {
-  max-width:1000px;
-  margin:auto;
-  background:white;
-  padding:22px;
-  border-radius:15px;
-}
-
-.product-info {
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:25px;
-  margin:25px 0;
-}
-
-.product-info img {
-  width:100%;
-  max-height:350px;
-  object-fit:contain;
-  border-radius:12px;
-}
-
-.product-page button,
-.wishlist-page button {
-  background:#2878e8;
-  color:white;
-  border:0;
-  border-radius:8px;
-  padding:11px 16px;
-  margin:5px;
-  cursor:pointer;
-}
-
-.product-page textarea {
-  display:block;
-  width:100%;
-  min-height:90px;
-  padding:12px;
-  margin:12px 0;
-  border:1px solid #ddd;
-  border-radius:8px;
-}
-
-.buyall-review {
-  padding:14px;
-  margin:10px 0;
-  background:#f2f6fc;
-  border-radius:10px;
-}
-
-@media(max-width:650px) {
-  .product-info {
-    grid-template-columns:1fr;
-  }
-}
-`;
-
-document.head.appendChild(productPageStyle);
-
-
-// ======================================
-// CONNECT PRODUCT DETAILS BUTTON
-// ======================================
-
-const originalShowProductDetails = showProductDetails;
-
-showProductDetails = function(id) {
-  openProductPage(id);
-};
-
-
-// ======================================
-// CONNECT WISHLIST BUTTON
-// ======================================
-
-document.getElementById("wishlistBtn")?.addEventListener(
-  "dblclick",
-  openWishlistPage
-);
-
-console.log("BUYALL PRODUCT PAGES READY!");
-// ======================================
-// BUYALL ADVANCED SEARCH
-// ======================================
-
-const searchStyle = document.createElement("style");
-
-searchStyle.textContent = `
-#buyallSearchSuggestions {
-  position:absolute;
-  top:100%;
-  left:0;
-  right:0;
-  background:white;
-  color:#222;
-  z-index:999;
-  border:1px solid #ddd;
-  border-radius:10px;
-  box-shadow:0 5px 15px #0001;
-  overflow:hidden;
-}
-
-.buyall-suggestion {
-  padding:12px;
-  cursor:pointer;
-  border-bottom:1px solid #eee;
-}
-
-.buyall-suggestion:hover {
-  background:#f1f6ff;
-}
-
-#buyallSearchTools {
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-  margin:15px 0;
-}
-
-#buyallSearchTools select,
-#buyallSearchTools input {
-  padding:10px;
-  border:1px solid #ddd;
-  border-radius:8px;
-  background:white;
-  color:#222;
-}
-`;
-
-document.head.appendChild(searchStyle);
-
-
-// ======================================
-// SEARCH SUGGESTIONS
-// ======================================
-
-const searchWrapper = searchInput?.parentElement;
-
-if (searchWrapper) {
-  searchWrapper.style.position = "relative";
-
-  const suggestions = document.createElement("div");
-  suggestions.id = "buyallSearchSuggestions";
-
-  searchWrapper.appendChild(suggestions);
-
-  searchInput.addEventListener("input", () => {
-    const query = searchInput.value.trim().toLowerCase();
-
-    suggestions.replaceChildren();
-
-    if (!query) return;
-
-    const matches = products.filter(product =>
-      product.name.toLowerCase().includes(query) ||
-      product.category.toLowerCase().includes(query)
-    ).slice(0, 5);
-
-    matches.forEach(product => {
-      const item = document.createElement("div");
-      item.className = "buyall-suggestion";
-      item.textContent = product.name;
-
-      item.onclick = () => {
-        searchInput.value = product.name;
-        suggestions.replaceChildren();
-        searchProducts();
-      };
-
-      suggestions.appendChild(item);
-    });
-  });
-
-  searchInput.addEventListener("keydown", event => {
-    if (event.key === "Escape") {
-      suggestions.replaceChildren();
+      toast("Price target reached: " + product.name);
     }
   });
 }
 
+/* =====================================
+   START WEBSITE
+===================================== */
 
-// ======================================
-// SHOPPING FILTER TOOLS
-// ======================================
+loadBrands();
+loadHome();
+updateCartCount();
 
-const searchTools = document.createElement("div");
-searchTools.id = "buyallSearchTools";
-
-searchTools.innerHTML = `
-  <select id="buyallSort">
-    <option value="default">Sort By</option>
-    <option value="low">Price: Low to High</option>
-    <option value="high">Price: High to Low</option>
-    <option value="rating">Top Rated</option>
-    <option value="discount">Biggest Discount</option>
-  </select>
-
-  <input
-    type="number"
-    id="buyallMaxPrice"
-    placeholder="Maximum Price ₹"
-    min="0"
-  >
-
-  <select id="buyallCategoryFilter">
-    <option value="All">All Categories</option>
-    <option value="Mobiles">Mobiles</option>
-    <option value="Electronics">Electronics</option>
-    <option value="Fashion">Fashion</option>
-    <option value="Shoes">Shoes</option>
-    <option value="Home">Home</option>
-    <option value="Gaming">Gaming</option>
-  </select>
-
-  <button id="buyallApplyFilters">Apply Filters</button>
-  <button id="buyallClearFilters">Clear</button>
-`;
-
-productGrid?.parentElement?.insertBefore(
-  searchTools,
-  productGrid
-);
-
-
-// ======================================
-// APPLY FILTERS
-// ======================================
-
-function applyBuyallFilters() {
-  const maxPrice = Number(
-    document.getElementById("buyallMaxPrice").value
-  );
-
-  const category = document.getElementById(
-    "buyallCategoryFilter"
-  ).value;
-
-  const sort = document.getElementById("buyallSort").value;
-
-  let filtered = [...products];
-
-  const query = searchInput?.value.trim().toLowerCase() || "";
-
-  if (query) {
-    filtered = filtered.filter(product =>
-      (
-        product.name + " " +
-        product.category + " " +
-        product.description
-      ).toLowerCase().includes(query)
-    );
-  }
-
-  if (category !== "All") {
-    filtered = filtered.filter(
-      product => product.category === category
-    );
-  }
-
-  if (maxPrice > 0) {
-    filtered = filtered.filter(
-      product => product.price <= maxPrice
-    );
-  }
-
-  if (sort === "low") {
-    filtered.sort((a, b) => a.price - b.price);
-  }
-
-  if (sort === "high") {
-    filtered.sort((a, b) => b.price - a.price);
-  }
-
-  if (sort === "rating") {
-    filtered.sort((a, b) => b.rating - a.rating);
-  }
-
-  if (sort === "discount") {
-    filtered.sort((a, b) => {
-      const discountA = a.oldPrice > 0
-        ? (a.oldPrice - a.price) / a.oldPrice
-        : 0;
-
-      const discountB = b.oldPrice > 0
-        ? (b.oldPrice - b.price) / b.oldPrice
-        : 0;
-
-      return discountB - discountA;
-    });
-  }
-
-  displayProducts(filtered, productGrid);
-
-  if (filtered.length === 0) {
-    showToast("No products match these filters.");
-  }
-}
-
-document.getElementById("buyallApplyFilters")
-  ?.addEventListener("click", applyBuyallFilters);
-
-document.getElementById("buyallClearFilters")
-  ?.addEventListener("click", () => {
-    document.getElementById("buyallMaxPrice").value = "";
-    document.getElementById("buyallCategoryFilter").value = "All";
-    document.getElementById("buyallSort").value = "default";
-
-    if (searchInput) searchInput.value = "";
-
-    displayProducts(products, productGrid);
-  });
-
-console.log("BUYALL ADVANCED SEARCH READY!");
-
+console.log("BUYALL COMPLETE FRONTEND LOADED");
