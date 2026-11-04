@@ -636,3 +636,326 @@ function randomPenguinReaction() {
 }
 
 console.log("buyall extra features loaded!");
+// ======================================
+// BUYALL ADMIN DASHBOARD
+// ======================================
+
+function openAdminDashboard() {
+  const password = prompt("Enter Admin Password:");
+
+  if (password !== "BUYALLADMIN") {
+    showToast("Access Denied!");
+    return;
+  }
+
+  const dashboard = document.createElement("div");
+
+  dashboard.id = "buyallAdmin";
+
+  dashboard.innerHTML = `
+    <div class="admin-panel">
+      <button id="closeAdmin">✕</button>
+      <h2>BUYALL ADMIN</h2>
+
+      <h3>Dashboard Overview</h3>
+      <p>Total Products: ${products.length}</p>
+      <p>Wishlist Items: ${wishlist.length}</p>
+
+      <h3>Add New Product</h3>
+
+      <input id="adminName" placeholder="Product Name">
+      <input id="adminPrice" type="number" placeholder="Price">
+      <input id="adminCategory" placeholder="Category">
+      <input id="adminImage" placeholder="Image URL">
+
+      <button id="addAdminProduct">Add Product</button>
+      <button id="adminExport">Export Products</button>
+    </div>
+  `;
+
+  document.body.appendChild(dashboard);
+
+  document.getElementById("closeAdmin").onclick = () => {
+    dashboard.remove();
+  };
+
+  document.getElementById("addAdminProduct").onclick = () => {
+    const name = document.getElementById("adminName").value.trim();
+    const price = Number(document.getElementById("adminPrice").value);
+    const category = document.getElementById("adminCategory").value.trim();
+    const image = document.getElementById("adminImage").value.trim();
+
+    if (!name || !price || price <= 0 || !category) {
+      alert("Please enter valid product details.");
+      return;
+    }
+
+    const newProduct = {
+      id: Date.now(),
+      name,
+      price,
+      oldPrice: price,
+      rating: 0,
+      category,
+      image: image || "https://placehold.co/400x300?text=Product",
+      store: "Not connected",
+      description: "Product added by admin."
+    };
+
+    products.push(newProduct);
+
+    localStorage.setItem(
+      "buyallProducts",
+      JSON.stringify(products)
+    );
+
+    loadHomePage();
+    showToast("Product added!");
+
+    dashboard.remove();
+  };
+
+  document.getElementById("adminExport").onclick = () => {
+    const file = new Blob(
+      [JSON.stringify(products, null, 2)],
+      { type: "application/json" }
+    );
+
+    const url = URL.createObjectURL(file);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = "buyall-products.json";
+    link.click();
+
+    URL.revokeObjectURL(url);
+  };
+}
+
+
+// ======================================
+// ADMIN BUTTON
+// ======================================
+
+const adminButton = document.createElement("button");
+adminButton.textContent = "Admin";
+adminButton.onclick = openAdminDashboard;
+
+document.querySelector(".header")?.appendChild(adminButton);
+
+
+// ======================================
+// ADMIN STYLE
+// ======================================
+
+const adminStyle = document.createElement("style");
+
+adminStyle.textContent = `
+#buyallAdmin {
+  position: fixed;
+  inset: 0;
+  background: #0009;
+  z-index: 10000;
+  display: grid;
+  place-items: center;
+  padding: 15px;
+}
+
+.admin-panel {
+  background: white;
+  color: #222;
+  width: min(450px, 100%);
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 22px;
+  border-radius: 16px;
+}
+
+.admin-panel input {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.admin-panel button {
+  padding: 10px 14px;
+  margin: 5px;
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  background: #2878e8;
+  color: white;
+}
+`;
+
+document.head.appendChild(adminStyle);
+
+
+// ======================================
+// ADVANCED SEARCH
+// ======================================
+
+function advancedSearch(query) {
+  const words = query.toLowerCase().split(/\s+/).filter(Boolean);
+
+  const results = products.filter(product => {
+    const text = (
+      product.name + " " +
+      product.category + " " +
+      product.description
+    ).toLowerCase();
+
+    return words.every(word => text.includes(word));
+  });
+
+  displayProducts(results, productGrid);
+
+  if (results.length === 0) {
+    showToast("No matching products found.");
+  }
+}
+
+
+// ======================================
+// LANGUAGE SYSTEM
+// ======================================
+
+const buyallLanguages = {
+  English: {
+    search: "Search products...",
+    trending: "Trending Products",
+    deals: "Best Deals",
+    recent: "Recently Viewed"
+  },
+
+  Bengali: {
+    search: "পণ্য খুঁজুন...",
+    trending: "জনপ্রিয় পণ্য",
+    deals: "সেরা অফার",
+    recent: "সম্প্রতি দেখা"
+  },
+
+  Hindi: {
+    search: "उत्पाद खोजें...",
+    trending: "लोकप्रिय उत्पाद",
+    deals: "सबसे अच्छे ऑफर",
+    recent: "हाल ही में देखे गए"
+  }
+};
+
+function changeBuyallLanguage(language) {
+  const selected = buyallLanguages[language];
+
+  if (!selected) {
+    showToast("Language not available yet.");
+    return;
+  }
+
+  if (searchInput) {
+    searchInput.placeholder = selected.search;
+  }
+
+  const headings = document.querySelectorAll("h2");
+
+  if (headings[0]) headings[0].textContent = selected.trending;
+  if (headings[1]) headings[1].textContent = selected.deals;
+  if (headings[2]) headings[2].textContent = selected.recent;
+
+  localStorage.setItem("buyallLanguage", language);
+}
+
+
+// ======================================
+// LANGUAGE SELECTOR
+// ======================================
+
+const languageSelector = document.createElement("select");
+
+languageSelector.innerHTML = `
+  <option value="English">English</option>
+  <option value="Bengali">বাংলা</option>
+  <option value="Hindi">हिन्दी</option>
+`;
+
+languageSelector.value =
+  localStorage.getItem("buyallLanguage") || "English";
+
+languageSelector.onchange = () => {
+  changeBuyallLanguage(languageSelector.value);
+};
+
+document.querySelector(".header")?.appendChild(languageSelector);
+
+changeBuyallLanguage(languageSelector.value);
+
+
+// ======================================
+// BUYALL SETTINGS
+// ======================================
+
+function openBuyallSettings() {
+  const settings = document.createElement("div");
+
+  settings.style.cssText = `
+    position:fixed;
+    inset:0;
+    background:#0008;
+    z-index:10001;
+    display:grid;
+    place-items:center;
+    padding:15px;
+  `;
+
+  settings.innerHTML = `
+    <div style="
+      background:white;
+      color:#222;
+      padding:22px;
+      border-radius:15px;
+      width:min(350px,100%);
+    ">
+      <h2>Settings</h2>
+
+      <label>
+        Theme:
+        <select id="settingTheme">
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+        </select>
+      </label>
+
+      <br><br>
+
+      <button id="saveSettings">Save Settings</button>
+      <button id="closeSettings">Close</button>
+    </div>
+  `;
+
+  document.body.appendChild(settings);
+
+  const themeSelect = settings.querySelector("#settingTheme");
+
+  themeSelect.value =
+    localStorage.getItem("buyallTheme") || "light";
+
+  settings.querySelector("#saveSettings").onclick = () => {
+    applyTheme(themeSelect.value);
+    settings.remove();
+    showToast("Settings saved!");
+  };
+
+  settings.querySelector("#closeSettings").onclick = () => {
+    settings.remove();
+  };
+}
+
+const settingsButton = document.createElement("button");
+settingsButton.textContent = "Settings";
+settingsButton.onclick = openBuyallSettings;
+
+document.querySelector(".header")?.appendChild(settingsButton);
+
+console.log("BUYALL ADMIN AND SETTINGS READY!");
