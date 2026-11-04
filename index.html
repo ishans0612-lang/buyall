@@ -1,1 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="buyall - Find products, compare prices and discover great deals.">
+  <title>buyall — Everything in One Place</title>
+  <link rel="stylesheet" href="style.css">
+</head>
 
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <a href="#" class="logo">buy<span>all</span></a>
+
+    <div class="search-box">
+      <input
+        type="search"
+        id="searchInput"
+        placeholder="Search products, brands and more..."
+      >
+      <button id="searchBtn" aria-label="Search">⌕</button>
+    </div>
+
+    <nav class="header-actions">
+      <button id="themeBtn">Theme</button>
+      <button id="accountBtn">Account</button>
+      <button id="wishlistBtn">Wishlist</button>
+      <button id="cartBtn">Cart</button>
+    </nav>
+  </header>
+
+  <!-- CATEGORY NAVIGATION -->
+  <nav class="categories" id="categories">
+    <button data-category="All">All</button>
+    <button data-category="Mobiles">Mobiles</button>
+    <button data-category="Electronics">Electronics</button>
+    <button data-category="Fashion">Fashion</button>
+    <button data-category="Shoes">Shoes</button>
+    <button data-category="Beauty">Beauty</button>
+    <button data-category="Home">Home</button>
+    <button data-category="Books">Books</button>
+    <button data-category="Gaming">Gaming</button>
+    <button data-category="Deals">Deals</button>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+      <div>
+        <span class="eyebrow">SMART SHOPPING STARTS HERE</span>
+
+        <h1>
+          Find it. Compare it.<br>
+          <span>Buy it smarter.</span>
+        </h1>
+
+        <p>
+          Explore products from different stores
+          and compare prices in one place.
+        </p>
+
+        <button class="primary-btn" id="exploreBtn">
+          Explore Products
+        </button>
+      </div>
+
+      <div class="hero-art">
+        <div class="art-circle">buyall</div>
+      </div>
+    </section>
+
+    <!-- TRENDING PRODUCTS -->
+    <section class="section" id="productsSection">
+      <div class="section-heading">
+        <div>
+          <h2>Trending Products</h2>
+          <p>Popular products worth discovering</p>
+        </div>
+
+        <button class="text-btn" id="viewAllBtn">
+          View all →
+        </button>
+      </div>
+
+      <div class="product-grid" id="productGrid"></div>
+    </section>
+
+    <!-- BEST DEALS -->
+    <section class="section">
+      <div class="section-heading">
+        <div>
+          <h2>Best Deals</h2>
+          <p>Discover great prices</p>
+        </div>
+      </div>
+
+      <div class="product-grid" id="dealsGrid"></div>
+    </section>
+
+    <!-- RECENTLY VIEWED -->
+    <section class="section recently">
+      <h2>Recently Viewed</h2>
+      <div id="recentGrid" class="product-grid"></div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <a href="#" class="logo">buy<span>all</span></a>
+
+    <p>Everything. Everywhere. One Place.</p>
+
+    <p>© 2026 buyall. All rights reserved.</p>
+  </footer>
+
+  <!-- NOTIFICATION -->
+  <div id="toast" class="toast"></div>
+
+  <!-- JAVASCRIPT -->
+  <script src="script.js"></script>
+
+</body>
+</html>
