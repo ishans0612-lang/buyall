@@ -959,3 +959,308 @@ settingsButton.onclick = openBuyallSettings;
 document.querySelector(".header")?.appendChild(settingsButton);
 
 console.log("BUYALL ADMIN AND SETTINGS READY!");
+// ======================================
+// BUYALL PRODUCT DETAILS PAGE
+// ======================================
+
+function openProductPage(id) {
+  const product = products.find(p => p.id === id);
+  if (!product) return;
+
+  addToRecentlyViewed(id);
+
+  const page = document.createElement("div");
+  page.id = "buyallProductPage";
+
+  page.innerHTML = `
+    <div class="product-page">
+      <button id="backToShop">← Back to Shopping</button>
+
+      <div class="product-info">
+        <img id="detailImage" alt="Product image">
+
+        <div>
+          <h1 id="detailName"></h1>
+          <h2 id="detailPrice"></h2>
+          <p id="detailCategory"></p>
+          <p id="detailRating"></p>
+
+          <button id="detailWishlist">♡ Add to Wishlist</button>
+          <button id="detailAlert">Set Price Alert</button>
+        </div>
+      </div>
+
+      <h2>Product Description</h2>
+      <p id="detailDescription"></p>
+
+      <h2>Price Comparison</h2>
+      <div id="detailComparison"></div>
+
+      <h2>Customer Reviews</h2>
+      <div id="reviewList"></div>
+
+      <h3>Write a Review</h3>
+      <select id="reviewRating">
+        <option value="5">★★★★★</option>
+        <option value="4">★★★★</option>
+        <option value="3">★★★</option>
+        <option value="2">★★</option>
+        <option value="1">★</option>
+      </select>
+
+      <textarea id="reviewText" placeholder="Write your review"></textarea>
+      <button id="submitReview">Submit Review</button>
+    </div>
+  `;
+
+  document.body.appendChild(page);
+
+  document.getElementById("detailImage").src = product.image;
+  document.getElementById("detailName").textContent = product.name;
+  document.getElementById("detailPrice").textContent =
+    "₹" + product.price.toLocaleString("en-IN");
+
+  document.getElementById("detailCategory").textContent =
+    "Category: " + product.category;
+
+  document.getElementById("detailRating").textContent =
+    "Rating: " + product.rating + "/5";
+
+  document.getElementById("detailDescription").textContent =
+    product.description;
+
+  document.getElementById("backToShop").onclick = () => page.remove();
+
+  document.getElementById("detailWishlist").onclick = () => {
+    toggleWishlist(product.id);
+    document.getElementById("detailWishlist").textContent =
+      wishlist.includes(product.id)
+        ? "♥ Saved"
+        : "♡ Add to Wishlist";
+  };
+
+  document.getElementById("detailAlert").onclick = () => {
+    const target = prompt("Enter your target price in ₹:");
+
+    if (target !== null && Number(target) > 0) {
+      setPriceAlert(product.id, Number(target));
+    }
+  };
+
+  // Price comparison data is clearly marked as sample.
+  const comparison = document.getElementById("detailComparison");
+
+  comparison.textContent =
+    "Live retailer prices are not connected yet. Current listed price: ₹" +
+    product.price.toLocaleString("en-IN");
+
+  displayReviews(product.id);
+
+  document.getElementById("submitReview").onclick = () => {
+    const text = document.getElementById("reviewText").value.trim();
+    const rating = Number(
+      document.getElementById("reviewRating").value
+    );
+
+    if (!text) {
+      showToast("Please write a review.");
+      return;
+    }
+
+    const allReviews = JSON.parse(
+      localStorage.getItem("buyallReviews") || "{}"
+    );
+
+    allReviews[product.id] = allReviews[product.id] || [];
+
+    allReviews[product.id].push({
+      text,
+      rating,
+      date: new Date().toLocaleDateString()
+    });
+
+    localStorage.setItem(
+      "buyallReviews",
+      JSON.stringify(allReviews)
+    );
+
+    document.getElementById("reviewText").value = "";
+
+    displayReviews(product.id);
+    showToast("Review added!");
+  };
+}
+
+
+// ======================================
+// REVIEW SYSTEM
+// ======================================
+
+function displayReviews(productId) {
+  const container = document.getElementById("reviewList");
+  if (!container) return;
+
+  container.replaceChildren();
+
+  const allReviews = JSON.parse(
+    localStorage.getItem("buyallReviews") || "{}"
+  );
+
+  const reviews = allReviews[productId] || [];
+
+  if (reviews.length === 0) {
+    container.textContent = "No reviews yet.";
+    return;
+  }
+
+  reviews.forEach(review => {
+    const item = document.createElement("div");
+    item.className = "buyall-review";
+
+    const title = document.createElement("strong");
+    title.textContent = "Rating: " + "★".repeat(review.rating);
+
+    const comment = document.createElement("p");
+    comment.textContent = review.text;
+
+    const date = document.createElement("small");
+    date.textContent = review.date;
+
+    item.append(title, comment, date);
+    container.appendChild(item);
+  });
+}
+
+
+// ======================================
+// WISHLIST PAGE
+// ======================================
+
+function openWishlistPage() {
+  const page = document.createElement("div");
+  page.id = "buyallWishlistPage";
+
+  page.innerHTML = `
+    <div class="wishlist-page">
+      <button id="closeWishlistPage">← Back</button>
+      <h1>My Wishlist</h1>
+      <div id="wishlistProducts" class="product-grid"></div>
+    </div>
+  `;
+
+  document.body.appendChild(page);
+
+  document.getElementById("closeWishlistPage").onclick = () => {
+    page.remove();
+  };
+
+  const saved = products.filter(p => wishlist.includes(p.id));
+
+  displayProducts(
+    saved,
+    document.getElementById("wishlistProducts")
+  );
+}
+
+
+// ======================================
+// PRODUCT PAGE DESIGN
+// ======================================
+
+const productPageStyle = document.createElement("style");
+
+productPageStyle.textContent = `
+#buyallProductPage,
+#buyallWishlistPage {
+  position:fixed;
+  inset:0;
+  z-index:9998;
+  background:#f5f8fc;
+  color:#222;
+  overflow-y:auto;
+  padding:20px;
+}
+
+.product-page,
+.wishlist-page {
+  max-width:1000px;
+  margin:auto;
+  background:white;
+  padding:22px;
+  border-radius:15px;
+}
+
+.product-info {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:25px;
+  margin:25px 0;
+}
+
+.product-info img {
+  width:100%;
+  max-height:350px;
+  object-fit:contain;
+  border-radius:12px;
+}
+
+.product-page button,
+.wishlist-page button {
+  background:#2878e8;
+  color:white;
+  border:0;
+  border-radius:8px;
+  padding:11px 16px;
+  margin:5px;
+  cursor:pointer;
+}
+
+.product-page textarea {
+  display:block;
+  width:100%;
+  min-height:90px;
+  padding:12px;
+  margin:12px 0;
+  border:1px solid #ddd;
+  border-radius:8px;
+}
+
+.buyall-review {
+  padding:14px;
+  margin:10px 0;
+  background:#f2f6fc;
+  border-radius:10px;
+}
+
+@media(max-width:650px) {
+  .product-info {
+    grid-template-columns:1fr;
+  }
+}
+`;
+
+document.head.appendChild(productPageStyle);
+
+
+// ======================================
+// CONNECT PRODUCT DETAILS BUTTON
+// ======================================
+
+const originalShowProductDetails = showProductDetails;
+
+showProductDetails = function(id) {
+  openProductPage(id);
+};
+
+
+// ======================================
+// CONNECT WISHLIST BUTTON
+// ======================================
+
+document.getElementById("wishlistBtn")?.addEventListener(
+  "dblclick",
+  openWishlistPage
+);
+
+console.log("BUYALL PRODUCT PAGES READY!");
+
