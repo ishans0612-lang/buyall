@@ -1263,4 +1263,236 @@ document.getElementById("wishlistBtn")?.addEventListener(
 );
 
 console.log("BUYALL PRODUCT PAGES READY!");
+// ======================================
+// BUYALL ADVANCED SEARCH
+// ======================================
+
+const searchStyle = document.createElement("style");
+
+searchStyle.textContent = `
+#buyallSearchSuggestions {
+  position:absolute;
+  top:100%;
+  left:0;
+  right:0;
+  background:white;
+  color:#222;
+  z-index:999;
+  border:1px solid #ddd;
+  border-radius:10px;
+  box-shadow:0 5px 15px #0001;
+  overflow:hidden;
+}
+
+.buyall-suggestion {
+  padding:12px;
+  cursor:pointer;
+  border-bottom:1px solid #eee;
+}
+
+.buyall-suggestion:hover {
+  background:#f1f6ff;
+}
+
+#buyallSearchTools {
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin:15px 0;
+}
+
+#buyallSearchTools select,
+#buyallSearchTools input {
+  padding:10px;
+  border:1px solid #ddd;
+  border-radius:8px;
+  background:white;
+  color:#222;
+}
+`;
+
+document.head.appendChild(searchStyle);
+
+
+// ======================================
+// SEARCH SUGGESTIONS
+// ======================================
+
+const searchWrapper = searchInput?.parentElement;
+
+if (searchWrapper) {
+  searchWrapper.style.position = "relative";
+
+  const suggestions = document.createElement("div");
+  suggestions.id = "buyallSearchSuggestions";
+
+  searchWrapper.appendChild(suggestions);
+
+  searchInput.addEventListener("input", () => {
+    const query = searchInput.value.trim().toLowerCase();
+
+    suggestions.replaceChildren();
+
+    if (!query) return;
+
+    const matches = products.filter(product =>
+      product.name.toLowerCase().includes(query) ||
+      product.category.toLowerCase().includes(query)
+    ).slice(0, 5);
+
+    matches.forEach(product => {
+      const item = document.createElement("div");
+      item.className = "buyall-suggestion";
+      item.textContent = product.name;
+
+      item.onclick = () => {
+        searchInput.value = product.name;
+        suggestions.replaceChildren();
+        searchProducts();
+      };
+
+      suggestions.appendChild(item);
+    });
+  });
+
+  searchInput.addEventListener("keydown", event => {
+    if (event.key === "Escape") {
+      suggestions.replaceChildren();
+    }
+  });
+}
+
+
+// ======================================
+// SHOPPING FILTER TOOLS
+// ======================================
+
+const searchTools = document.createElement("div");
+searchTools.id = "buyallSearchTools";
+
+searchTools.innerHTML = `
+  <select id="buyallSort">
+    <option value="default">Sort By</option>
+    <option value="low">Price: Low to High</option>
+    <option value="high">Price: High to Low</option>
+    <option value="rating">Top Rated</option>
+    <option value="discount">Biggest Discount</option>
+  </select>
+
+  <input
+    type="number"
+    id="buyallMaxPrice"
+    placeholder="Maximum Price ₹"
+    min="0"
+  >
+
+  <select id="buyallCategoryFilter">
+    <option value="All">All Categories</option>
+    <option value="Mobiles">Mobiles</option>
+    <option value="Electronics">Electronics</option>
+    <option value="Fashion">Fashion</option>
+    <option value="Shoes">Shoes</option>
+    <option value="Home">Home</option>
+    <option value="Gaming">Gaming</option>
+  </select>
+
+  <button id="buyallApplyFilters">Apply Filters</button>
+  <button id="buyallClearFilters">Clear</button>
+`;
+
+productGrid?.parentElement?.insertBefore(
+  searchTools,
+  productGrid
+);
+
+
+// ======================================
+// APPLY FILTERS
+// ======================================
+
+function applyBuyallFilters() {
+  const maxPrice = Number(
+    document.getElementById("buyallMaxPrice").value
+  );
+
+  const category = document.getElementById(
+    "buyallCategoryFilter"
+  ).value;
+
+  const sort = document.getElementById("buyallSort").value;
+
+  let filtered = [...products];
+
+  const query = searchInput?.value.trim().toLowerCase() || "";
+
+  if (query) {
+    filtered = filtered.filter(product =>
+      (
+        product.name + " " +
+        product.category + " " +
+        product.description
+      ).toLowerCase().includes(query)
+    );
+  }
+
+  if (category !== "All") {
+    filtered = filtered.filter(
+      product => product.category === category
+    );
+  }
+
+  if (maxPrice > 0) {
+    filtered = filtered.filter(
+      product => product.price <= maxPrice
+    );
+  }
+
+  if (sort === "low") {
+    filtered.sort((a, b) => a.price - b.price);
+  }
+
+  if (sort === "high") {
+    filtered.sort((a, b) => b.price - a.price);
+  }
+
+  if (sort === "rating") {
+    filtered.sort((a, b) => b.rating - a.rating);
+  }
+
+  if (sort === "discount") {
+    filtered.sort((a, b) => {
+      const discountA = a.oldPrice > 0
+        ? (a.oldPrice - a.price) / a.oldPrice
+        : 0;
+
+      const discountB = b.oldPrice > 0
+        ? (b.oldPrice - b.price) / b.oldPrice
+        : 0;
+
+      return discountB - discountA;
+    });
+  }
+
+  displayProducts(filtered, productGrid);
+
+  if (filtered.length === 0) {
+    showToast("No products match these filters.");
+  }
+}
+
+document.getElementById("buyallApplyFilters")
+  ?.addEventListener("click", applyBuyallFilters);
+
+document.getElementById("buyallClearFilters")
+  ?.addEventListener("click", () => {
+    document.getElementById("buyallMaxPrice").value = "";
+    document.getElementById("buyallCategoryFilter").value = "All";
+    document.getElementById("buyallSort").value = "default";
+
+    if (searchInput) searchInput.value = "";
+
+    displayProducts(products, productGrid);
+  });
+
+console.log("BUYALL ADVANCED SEARCH READY!");
 
