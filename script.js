@@ -350,3 +350,289 @@ function showToast(message) {
 loadHomePage();
 
 console.log("buyall website loaded successfully!");
+// ======================================
+// BUYALL EXTRA FEATURES
+// ======================================
+
+// VIP ACCESS
+const VIP_CODE = "0987654321";
+
+function openVIP() {
+  const code = prompt(
+    "BUYALL VIP ACCESS\nVIP Price: ₹399\nEnter your Access Code:"
+  );
+
+  if (code === VIP_CODE) {
+    localStorage.setItem("buyallVIP", "true");
+    showToast("VIP Access Unlocked!");
+  } else if (code !== null) {
+    showToast("Incorrect Access Code!");
+  }
+}
+
+const vipButton = document.createElement("button");
+vipButton.textContent = "VIP Access ₹399";
+vipButton.onclick = openVIP;
+document.querySelector(".header")?.appendChild(vipButton);
+
+
+// ======================================
+// PRICE COMPARISON
+// ======================================
+
+const comparisonStores = [
+  { name: "Store A", price: 1299 },
+  { name: "Store B", price: 1199 },
+  { name: "Store C", price: 1399 }
+];
+
+function showPriceComparison(product) {
+  const prices = comparisonStores
+    .slice()
+    .sort((a, b) => a.price - b.price);
+
+  let result = "PRICE COMPARISON\n\n";
+
+  prices.forEach(store => {
+    result += `${store.name}: ₹${store.price}\n`;
+  });
+
+  result += "\nLowest listed price: ₹" + prices[0].price;
+  alert(result);
+}
+
+
+// ======================================
+// PRODUCT LINK COMPARISON
+// ======================================
+
+function compareProductLink() {
+  const link = prompt("Paste a product link:");
+
+  if (!link) return;
+
+  try {
+    const url = new URL(link);
+
+    if (!["http:", "https:"].includes(url.protocol)) {
+      throw new Error("Invalid URL");
+    }
+
+    showToast("Product link saved for comparison.");
+    localStorage.setItem("buyallCompareLink", url.href);
+  } catch {
+    showToast("Please enter a valid product link.");
+  }
+}
+
+const compareButton = document.createElement("button");
+compareButton.textContent = "Compare Product Link";
+compareButton.onclick = compareProductLink;
+document.querySelector(".header")?.appendChild(compareButton);
+
+
+// ======================================
+// BUYALL PENGUIN MASCOT
+// ======================================
+
+const penguinStyle = document.createElement("style");
+
+penguinStyle.textContent = `
+#buyallPenguin {
+  position: fixed;
+  bottom: 18px;
+  right: 15px;
+  z-index: 9999;
+  width: 85px;
+  cursor: pointer;
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+#buyallPenguin .penguin-body {
+  width: 65px;
+  height: 78px;
+  background: #20252d;
+  border-radius: 48% 48% 42% 42%;
+  margin: auto;
+  position: relative;
+  box-shadow: 0 5px 12px #0002;
+}
+
+#buyallPenguin .penguin-face {
+  position: absolute;
+  width: 43px;
+  height: 48px;
+  background: white;
+  border-radius: 50%;
+  top: 12px;
+  left: 11px;
+}
+
+#buyallPenguin .penguin-eyes {
+  position: absolute;
+  top: 15px;
+  left: 11px;
+  font-size: 12px;
+  color: black;
+}
+
+#buyallPenguin .penguin-beak {
+  position: absolute;
+  top: 27px;
+  left: 17px;
+  width: 0;
+  height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-top: 9px solid #ff9d26;
+}
+
+#buyallPenguin .penguin-message {
+  display: none;
+  position: absolute;
+  bottom: 88px;
+  right: 0;
+  width: 165px;
+  padding: 10px;
+  background: white;
+  color: #222;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px #0002;
+  font-size: 12px;
+}
+
+#buyallPenguin.active .penguin-message {
+  display: block;
+}
+
+#buyallPenguin .penguin-feet {
+  color: #ff9d26;
+  font-size: 20px;
+  margin-top: -5px;
+}
+`;
+
+document.head.appendChild(penguinStyle);
+
+const penguin = document.createElement("div");
+penguin.id = "buyallPenguin";
+
+penguin.innerHTML = `
+  <div class="penguin-message" id="penguinMessage">
+    Welcome to buyall! Let's find great deals!
+  </div>
+  <div class="penguin-body">
+    <div class="penguin-face">
+      <div class="penguin-eyes">●　●</div>
+      <div class="penguin-beak"></div>
+    </div>
+  </div>
+  <div class="penguin-feet">⌄　⌄</div>
+`;
+
+document.body.appendChild(penguin);
+
+penguin.addEventListener("click", () => {
+  penguin.classList.toggle("active");
+});
+
+function penguinTalk(message) {
+  document.getElementById("penguinMessage").textContent = message;
+  penguin.classList.add("active");
+}
+
+if (!localStorage.getItem("buyallWelcomed")) {
+  setTimeout(() => {
+    penguinTalk("Hello! Welcome to buyall!");
+    localStorage.setItem("buyallWelcomed", "true");
+  }, 1500);
+}
+
+
+// ======================================
+// ACHIEVEMENT MESSAGES
+// ======================================
+
+function celebrateAchievement(message) {
+  penguinTalk(message);
+
+  if ("vibrate" in navigator) {
+    navigator.vibrate(100);
+  }
+}
+
+
+// ======================================
+// PRICE ALERT
+// ======================================
+
+function setPriceAlert(productId, targetPrice) {
+  const alerts = JSON.parse(
+    localStorage.getItem("buyallPriceAlerts") || "[]"
+  );
+
+  alerts.push({
+    productId: productId,
+    targetPrice: Number(targetPrice)
+  });
+
+  localStorage.setItem(
+    "buyallPriceAlerts",
+    JSON.stringify(alerts)
+  );
+
+  showToast("Price alert saved!");
+}
+
+
+// ======================================
+// FILTER BY PRICE
+// ======================================
+
+function filterByMaximumPrice(maxPrice) {
+  const filtered = products.filter(
+    product => product.price <= Number(maxPrice)
+  );
+
+  displayProducts(filtered, productGrid);
+}
+
+
+// ======================================
+// SORT PRICE
+// ======================================
+
+function sortProductsByPrice(order = "low") {
+  const sorted = [...products].sort((a, b) => {
+    return order === "low"
+      ? a.price - b.price
+      : b.price - a.price;
+  });
+
+  displayProducts(sorted, productGrid);
+}
+
+
+// ======================================
+// RANDOM PENGUIN REACTIONS
+// ======================================
+
+const penguinMessages = [
+  "Great choice!",
+  "Let's find a better price!",
+  "Keep exploring!",
+  "You are doing great!",
+  "Happy shopping!"
+];
+
+function randomPenguinReaction() {
+  const message = penguinMessages[
+    Math.floor(Math.random() * penguinMessages.length)
+  ];
+
+  celebrateAchievement(message);
+}
+
+console.log("buyall extra features loaded!");
